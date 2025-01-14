@@ -4,12 +4,18 @@ cmake_minimum_required(VERSION 3.20)
 project(dsp_framework
     VERSION 0.1.0
     DESCRIPTION "High-performance DSP Framework (Optimized for i5-6300U)"
-    LANGUAGES CXX)
+    LANGUAGES CXX
+)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Build options
+option(DSP_ENABLE_BENCHMARKS "Enable benchmark tests" OFF)
+option(DSP_ENABLE_EXAMPLES "Build example programs" OFF)
+option(BUILD_TESTING "Build the testing tree." ON)
 
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -22,6 +28,17 @@ FetchContent_Declare(
     GIT_TAG release-1.12.1
 )
 FetchContent_MakeAvailable(googletest)
+
+# Optionally fetch Google Benchmark
+if(DSP_ENABLE_BENCHMARKS)
+    FetchContent_Declare(
+        benchmark
+        GIT_REPOSITORY https://github.com/google/benchmark.git
+        GIT_TAG v1.8.3
+    )
+    set(BENCHMARK_ENABLE_TESTING OFF)
+    FetchContent_MakeAvailable(benchmark)
+endif()
 
 # Optimization flags for i5-6300U
 if(MSVC)
@@ -50,25 +67,37 @@ if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
 else()
     # Common GCC/Clang flags
-    add_compile_options(-Wall -Wextra -march=native -mavx2)
+    add_compile_options(
+        -Wall 
+        -Wextra 
+        -march=native 
+        -mavx2
+    )
     
     # Configuration-specific flags
     string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O3 -ffunction-sections -fdata-sections")
     string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0 -g")
 endif()
 
-# Thread pool size (optimized for 4 logical processors)
-add_definitions(-DTHREAD_POOL_SIZE=4)
-# Cache line size (64 bytes for this CPU)
-add_definitions(-DCACHE_LINE_SIZE=64)
-# L1 cache size (32KB per core)
-add_definitions(-DL1_CACHE_SIZE=32768)
+# Hardware-specific definitions
+add_definitions(
+    -DTHREAD_POOL_SIZE=4
+    -DCACHE_LINE_SIZE=64
+    -DL1_CACHE_SIZE=32768
+)
 
-# Enable testing first
+# Enable testing
 enable_testing()
 
-# Then add the source directory
+# Add source directory
 add_subdirectory(src)
 
-# Set up tests configuration
-add_subdirectory(tests)
+# Add tests directory if testing is enabled
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
+
+# Optionally add examples
+if(DSP_ENABLE_EXAMPLES)
+    add_subdirectory(examples)
+endif()

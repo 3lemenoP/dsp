@@ -22,18 +22,18 @@ This build is specifically optimized for:
 ## Building
 
 1. Clone the repository:
-   \\\ash
+   \\\bash
    git clone [repository-url]
    cd dsp_framework
    \\\
 
 2. Configure with CMake:
-   \\\ash
+   \\\bash
    cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
    \\\
 
 3. Build:
-   \\\ash
+   \\\bash
    cmake --build build --config Release
    \\\
 
