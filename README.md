@@ -23,7 +23,11 @@ This build is specifically optimized for:
 
 1. Clone the repository:
    \\\bash
+<<<<<<< HEAD
    git clone [https://github.com/3lemenoP/dsp]
+=======
+   git clone [repository-url]
+>>>>>>> dev
    cd dsp_framework
    \\\
 

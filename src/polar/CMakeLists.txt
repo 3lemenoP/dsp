@@ -1,5 +1,3 @@
-# File: src/polar/CMakeLists.txt
-
 # Define the polar library as an OBJECT library for better optimization
 add_library(dsp_polar OBJECT)
 
@@ -13,11 +11,11 @@ set_target_properties(dsp_polar PROPERTIES
 # Source files
 target_sources(dsp_polar
     PRIVATE
-        include/dsp/polar/types.hpp
-        include/dsp/polar/accumulator.hpp
-        include/dsp/polar/operations.hpp
         src/accumulator.cpp
-        src/operations.cpp
+    PUBLIC
+        include/dsp/polar/types.hpp
+        include/dsp/polar/operations.hpp
+        include/dsp/polar/accumulator.hpp
 )
 
 # Include directories
