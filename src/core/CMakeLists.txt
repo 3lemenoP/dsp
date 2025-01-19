@@ -1,7 +1,7 @@
-# src/core/CMakeLists.txt
-
+# Create core library
 add_library(dsp_core OBJECT
-    fft/fft.cpp
+    fft/fft_plan.cpp
+    fft/fft.cpp                     # Placeholder file
     filters/filter.cpp
     modulation/modulator.cpp
     pll/pll.cpp
@@ -22,8 +22,24 @@ target_compile_options(dsp_core
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-mavx2>
 )
 
-# Create placeholder source files
-file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/fft/fft.cpp" "// FFT implementation\n")
-file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/filters/filter.cpp" "// Filter implementation\n")
-file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/modulation/modulator.cpp" "// Modulator implementation\n")
-file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/pll/pll.cpp" "// PLL implementation\n")
+# Create placeholder source files if they don't exist
+set(PLACEHOLDER_FILES
+    fft/fft.cpp
+    filters/filter.cpp
+    modulation/modulator.cpp
+    pll/pll.cpp
+)
+
+foreach(FILE ${PLACEHOLDER_FILES})
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}")
+        # For fft.cpp, add a note about fft_plan implementation
+        if(${FILE} STREQUAL "fft/fft.cpp")
+            file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}"
+                "// FFT implementation placeholder\n"
+                "// Main FFT functionality is currently implemented in fft_plan.hpp/cpp\n"
+            )
+        else()
+            file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}" "// ${FILE} implementation\n")
+        endif()
+    endif()
+endforeach()
